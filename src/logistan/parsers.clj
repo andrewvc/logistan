@@ -36,12 +36,13 @@
           (resolve-name reference))))))
 
 (defn group-names [pattern]
-  (when-let [matches (re-seq #"\(\?<([a-zA-Z][a-zA-Z0-9]*)>" pattern)]
-    (map second matches)))
+  (if-let [matches (re-seq #"\(\?<([a-zA-Z][a-zA-Z0-9]*)>" pattern)]
+    (map second matches)
+    []))
 
 (def CompiledPattern
   {(s/required-key :regexp) s/Regex
-   (s/required-key :groups) [s/Str]
+   :groups [s/Str]
    (s/required-key :source) s/Str
    })
 
@@ -63,17 +64,20 @@
     {}))
 
 (s/defn match-line
-  [regexp :- s/Regex groups :- [s/Str] line :- s/Str]
+  [regexp :- s/Regex groups :- (s/maybe [s/Str]) line :- s/Str]
   (group-vals (re-matcher regexp line) groups))
 
 (s/defn ^:always-validate pattern-parser
   "Returns a parser for a given pattern name"
   [{:keys [regexp groups]} :- CompiledPattern]
-  (fn [line]
-    (let [matches (match-line regexp groups line)]
-      (assoc matches :_source line))))
+  (fn [lines]
+    (map
+      (fn [line]
+        (let [matches (match-line regexp groups line)]
+          (assoc matches :_source line)))
+      lines)))
 
-(def parsers (into {} (map (fn [[name compiled-pattern]]
+(def parsers (into {} (map (s/fn [[name compiled-pattern]]
                              [name (pattern-parser compiled-pattern)])
                            compiled-patterns)))
 

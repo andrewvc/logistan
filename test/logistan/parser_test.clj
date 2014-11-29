@@ -1,6 +1,10 @@
 (ns logistan.parser-test
   (:require [clojure.test :refer :all]
+            [schema.test]
             [logistan.parsers :refer :all]))
+
+(use-fixtures :once schema.test/validate-schemas)
+
 
 (deftest pattern-matching
   (testing "group name extraction"
@@ -21,4 +25,4 @@
     (let [lines ["localhost:828" "andrewvc.com:8912"]
           parser (get-parser "HOSTPORT")
           parsed (parser lines)]
-      (is (= [{} {}] parsed)))))
+      (is (= [{:_source (first lines)} {:_source (second lines)}] parsed)))))

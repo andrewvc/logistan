@@ -1,0 +1,14 @@
+{
+  "hosts": [
+    {
+      "user": "webmaster",
+      "hostname": "example.net",
+      "logs": [
+        {
+          "path": "/var/log/syslog",
+         "parser": "SYSLOG"
+        }
+      ]
+    }
+  ]
+}

@@ -12,6 +12,7 @@
                  [cheshire "5.3.1"]
                  [clj-time "0.8.0"]
                  [prismatic/plumbing "0.3.5"]
+                 [org.clojure/tools.cli "0.3.1"]
                  ]
   :plugins [[ragtime/ragtime.lein "0.3.7"]]
   :main logistan.core
